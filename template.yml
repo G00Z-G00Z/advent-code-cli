@@ -1,0 +1,14 @@
+rust:
+  commands:
+    - cargo new {{project_name}}
+
+  files:
+    - name: .env
+      content: |
+         DEMO_APP=1
+    - src/lib.rs
+    - input.txt
+    - demo-input.txt
+
+  folders: 
+    - docs/
