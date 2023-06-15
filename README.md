@@ -22,3 +22,13 @@ language: rust
     folders: 
         - docs/
 ```
+
+Available variables to populate with the project info will be: 
+
+| Variable name | Description            |
+| ------------  | -----------            |
+| Variable name | Description            |
+| day           | Day of the advent      |
+| year          | Year of the advent     |
+| language      | Language of template   |
+| title         | Title of the challenge |
