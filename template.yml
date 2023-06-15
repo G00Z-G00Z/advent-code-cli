@@ -1,7 +1,7 @@
 rust:
   commands:
-    - cargo new {{project_name}}
-
+    - cargo new {{title}}
+       
   files:
     - name: .env
       content: |
@@ -12,3 +12,4 @@ rust:
 
   folders: 
     - docs/
+
