@@ -6,16 +6,14 @@ use crate::interfaces::DayChallenge;
 /// Error type for the yaml parser
 #[derive(Debug)]
 pub enum YamlParserError {
-    IoError(std::io::Error),
     TeraError(tera::Error),
 }
 
 /// Parses the yml file with the given metadata
 pub fn parse_yml_file(
-    yml_file: &str,
+    yml_file_content: &str,
     day_challenge: &DayChallenge,
 ) -> Result<String, YamlParserError> {
-    let content = fs::read_to_string(yml_file).map_err(|e| YamlParserError::IoError(e))?;
     let mut tera = Tera::default();
 
     let mut context = tera::Context::new();
@@ -34,7 +32,7 @@ pub fn parse_yml_file(
     }
 
     let rendered = tera
-        .render_str(&content, &context)
+        .render_str(&yml_file_content, &context)
         .map_err(|e| YamlParserError::TeraError(e))?;
 
     Ok(rendered)
