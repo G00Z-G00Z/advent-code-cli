@@ -1,8 +1,11 @@
-use advent_code_cli::hi;
-use advent_code_cli::yaml_parser::parse_yaml;
+use advent_code_cli::{interfaces::DayChallenge, yaml_parser};
 
+const template_name: &str = "template.yml";
 fn main() {
-    println!("Hello, world!");
-    hi();
-    parse_yaml()
+    let metadata = DayChallenge::new(1, 2020, "Rust".to_string(), "martin".to_string());
+
+    let parsed_content =
+        yaml_parser::parse_yml_file(template_name, &metadata).expect("Problem with parsing");
+
+    println!("{}", parsed_content)
 }
