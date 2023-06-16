@@ -20,11 +20,36 @@ pub struct Command {
     pub args: Vec<String>,
 }
 
+impl Command {
+    pub fn new(command: &str, args: Vec<String>) -> Self {
+        Self {
+            command: command.to_string(),
+            args,
+        }
+    }
+}
+
 /// Command to run
 #[derive(Debug, PartialEq, Eq)]
 pub struct File {
     pub name: String,
-    pub content: String,
+    pub content: Option<String>,
+}
+
+impl File {
+    pub fn new(name: &str, content: Option<String>) -> Self {
+        Self {
+            name: name.to_string(),
+            content,
+        }
+    }
+
+    pub fn empty(name: &str) -> Self {
+        Self {
+            name: name.to_string(),
+            content: None,
+        }
+    }
 }
 
 /// Programming template
