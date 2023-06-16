@@ -14,14 +14,21 @@ pub struct DayChallenge {
 }
 
 /// Command to run
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct Command {
     pub command: String,
     pub args: Vec<String>,
 }
 
+/// Command to run
+#[derive(Debug, PartialEq, Eq)]
+pub struct File {
+    pub name: String,
+    pub content: String,
+}
+
 /// Programming template
-#[derive(Debug)]
+#[derive(Debug, Default, PartialEq, Eq)]
 pub struct ProgrammingTemplate {
     /// Programming language
     pub language: String,
@@ -33,7 +40,7 @@ pub struct ProgrammingTemplate {
     pub commands: Vec<Command>,
 
     /// Files to create
-    pub files: Vec<String>,
+    pub files: Vec<File>,
 
     /// Folders to create
     pub folders: Vec<String>,
