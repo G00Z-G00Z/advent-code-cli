@@ -13,6 +13,32 @@ pub struct DayChallenge {
     pub title: String,
 }
 
+/// Command to run
+#[derive(Debug)]
+pub struct Command {
+    pub command: String,
+    pub args: Vec<String>,
+}
+
+/// Programming template
+#[derive(Debug)]
+pub struct ProgrammingTemplate {
+    /// Programming language
+    pub language: String,
+
+    /// Commands to run
+    pub init_commands: Vec<Command>,
+
+    /// Commands to run
+    pub commands: Vec<Command>,
+
+    /// Files to create
+    pub files: Vec<String>,
+
+    /// Folders to create
+    pub folders: Vec<String>,
+}
+
 impl Display for DayChallenge {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
