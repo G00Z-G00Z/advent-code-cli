@@ -1,7 +1,7 @@
 rust:
-  commands:
+  init_commands:
     - cargo new {{title}}
-       
+
   files:
     - name: .env
       content: |
@@ -13,3 +13,16 @@ rust:
   folders: 
     - docs/
 
+python:
+  commnads:
+    - pip install -r requirements.txt
+  files: 
+    - name: requirements.txt
+      content: |
+        numpy
+        pandas
+    - name: .env
+      content: |
+         DEMO_APP=1
+    - input.txt
+    - demo-input.txt
