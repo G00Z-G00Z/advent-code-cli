@@ -1,3 +1,4 @@
+use serde_yaml::{from_str, Value};
 use std::{collections::HashMap, fs};
 use tera::Tera;
 
@@ -10,7 +11,7 @@ pub enum YamlParserError {
 }
 
 /// Parses the yml file with the given metadata
-pub fn parse_yml_file(
+pub fn populate_yml(
     yml_file_content: &str,
     day_challenge: &DayChallenge,
 ) -> Result<String, YamlParserError> {
@@ -38,10 +39,13 @@ pub fn parse_yml_file(
     Ok(rendered)
 }
 
+pub fn parse_values_yml(yaml_content: &str) -> Result<Value, serde_yaml::Error> {
+    let parsed_value: Value = from_str(yaml_content)?;
+    Ok(parsed_value)
+}
+
 #[cfg(test)]
 mod tests {
-
-    use std::fmt::format;
 
     use super::*;
 
@@ -83,7 +87,7 @@ rust:
     - docs/
 ";
 
-        let parsed_content = parse_yml_file(&file_content, &metadata).unwrap();
+        let parsed_content = populate_yml(&file_content, &metadata).unwrap();
 
         assert_eq!(&parsed_content, &expected);
     }
@@ -131,7 +135,7 @@ rust:
             &metadata.title, &metadata.year, &metadata.day, &metadata.language, &metadata.day
         );
 
-        let parsed_content = parse_yml_file(&file_content, &metadata).unwrap();
+        let parsed_content = populate_yml(&file_content, &metadata).unwrap();
 
         assert_eq!(&parsed_content, &expected);
     }
