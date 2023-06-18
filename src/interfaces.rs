@@ -87,7 +87,7 @@ impl DayChallenge {
         Self {
             day,
             year,
-            language,
+            language: language.trim().to_lowercase(),
             title,
         }
     }
