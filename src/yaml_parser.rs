@@ -61,110 +61,129 @@ pub fn parse_values_yml(
     template.language = language.into();
 
     // Init commands
-    if let Some(init_commands) = target_lan_mapping.get(&Value::String("init_commands".into())) {
-        let init_commands_sequence = init_commands.as_sequence().ok_or_else(|| {
-            YamlParserError::BadFormat("init_commands must be in a list. Check your format".into())
-        })?;
+    value_to_list_commands(
+        target_lan_mapping.get(&Value::String("commands".into())),
+        &mut template.commands,
+    )?;
 
-        for command in init_commands_sequence {
-            let command_str = command.as_str().ok_or_else(|| {
-                YamlParserError::BadFormat(
-                    "Each init command must be a single string. Check your format".into(),
-                )
-            })?;
-
-            template
-                .init_commands
-                .push(Command::new(command_str, vec![]));
-        }
-    }
-
-    // commands
-    if let Some(commands) = target_lan_mapping.get(&Value::String("commands".into())) {
-        let commands_sequence = commands.as_sequence().ok_or_else(|| {
-            YamlParserError::BadFormat("commands must be in a list. Check your format".into())
-        })?;
-
-        for command in commands_sequence {
-            let command_str = command.as_str().ok_or_else(|| {
-                YamlParserError::BadFormat(
-                    "Each init command must be a single string. Check your format".into(),
-                )
-            })?;
-
-            template.commands.push(Command::new(command_str, vec![]));
-        }
-    }
+    // Init commands
+    value_to_list_commands(
+        target_lan_mapping.get(&Value::String("init_commands".into())),
+        &mut template.init_commands,
+    )?;
 
     // Folders
     if let Some(folders) = target_lan_mapping.get(&Value::String("folders".into())) {
-        let folders_sequence = folders.as_sequence().ok_or_else(|| {
-            YamlParserError::BadFormat("folders must be in a list. Check your format".into())
-        })?;
+        template.folders = folders
+            .as_sequence()
+            .ok_or_else(|| {
+                YamlParserError::BadFormat("folders must be in a list. Check your format".into())
+            })?
+            .iter()
+            .map(|command| {
+                let command_str = command.as_str().ok_or_else(|| {
+                    YamlParserError::BadFormat(
+                        "Each init command must be a single string. Check your format".into(),
+                    )
+                })?;
 
-        for command in folders_sequence {
-            let command_str = command.as_str().ok_or_else(|| {
-                YamlParserError::BadFormat(
-                    "Each init command must be a single string. Check your format".into(),
-                )
-            })?;
-
-            template.folders.push(command_str.to_string());
-        }
+                Ok(command_str.to_string())
+            })
+            .collect::<Result<Vec<String>, YamlParserError>>()?;
     }
 
     // Files
     if let Some(files) = target_lan_mapping.get(&Value::String("files".into())) {
-        let files_sequence = files.as_sequence().ok_or_else(|| {
-            YamlParserError::BadFormat("files must be in a list. Check your format".into())
-        })?;
-
-        for file in files_sequence {
-            if let Some(file_str) = file.as_str() {
-                template.files.push(File::empty(file_str));
-                continue;
-            }
-
-            if let Some(file_map) = file.as_mapping() {
-                let name = file_map
-                    .get(&Value::String("name".into()))
-                    .ok_or_else(|| {
-                        YamlParserError::BadFormat(
-                            "Each file must have a name. Check your format".into(),
-                        )
-                    })?
-                    .as_str()
-                    .ok_or_else(|| {
-                        YamlParserError::BadFormat(
-                            "Each file name must be a single string. Check your format".into(),
-                        )
-                    })?;
-
-                let content = file_map.get(&Value::String("content".into()));
-
-                if let Some(content) = content {
-                    let content_str = content.as_str().ok_or_else(|| {
-                        YamlParserError::BadFormat(
-                            "Each file content must be a single string. Check your format".into(),
-                        )
-                    })?;
-
-                    template
-                        .files
-                        .push(File::new(name, Some(content_str.into())));
-                } else {
-                    template.files.push(File::empty(name));
-                }
-                continue;
-            }
-
-            return Err(YamlParserError::BadFormat(
-                "Each file must be a string or a map. Check your format".into(),
-            ));
-        }
+        template.files = files
+            .as_sequence()
+            .ok_or_else(|| {
+                YamlParserError::BadFormat("files must be in a list. Check your format".into())
+            })?
+            .iter()
+            .map(|file| File::try_from(file))
+            .collect::<Result<Vec<File>, YamlParserError>>()?;
     }
 
     Ok(template)
+}
+
+/// Takes a yaml value and returns a vector of commands
+/// If the commands is not according to the tempalte, it will return an error
+fn value_to_list_commands(
+    values: Option<&Value>,
+    template_command_vec: &mut Vec<Command>,
+) -> Result<(), YamlParserError> {
+    if let None = values {
+        return Ok(());
+    }
+
+    let commands_sequence = values.unwrap().as_sequence().ok_or_else(|| {
+        YamlParserError::BadFormat("commands must be in a list. Check your format".into())
+    })?;
+
+    *template_command_vec = commands_sequence
+        .iter()
+        .map(|command| Command::try_from(command))
+        .collect::<Result<Vec<Command>, YamlParserError>>()?;
+    Ok(())
+}
+
+impl TryFrom<&Value> for File {
+    type Error = YamlParserError;
+
+    fn try_from(value: &Value) -> Result<Self, Self::Error> {
+        if let Some(file_str) = value.as_str() {
+            return Ok(File::empty(file_str));
+        }
+
+        if let Some(file_map) = value.as_mapping() {
+            let name = file_map
+                .get(&Value::String("name".into()))
+                .ok_or_else(|| {
+                    YamlParserError::BadFormat(
+                        "Each file must have a name. Check your format".into(),
+                    )
+                })?
+                .as_str()
+                .ok_or_else(|| {
+                    YamlParserError::BadFormat(
+                        "Each file name must be a single string. Check your format".into(),
+                    )
+                })?;
+
+            let content = file_map.get(&Value::String("content".into()));
+
+            if let Some(content) = content {
+                let content_str = content.as_str().ok_or_else(|| {
+                    YamlParserError::BadFormat(
+                        "Each file content must be a single string. Check your format".into(),
+                    )
+                })?;
+
+                return Ok(File::new(name, Some(content_str.into())));
+            } else {
+                return Ok(File::empty(name));
+            }
+        }
+
+        Err(YamlParserError::BadFormat(
+            "Each file must be a string or a map. Check your format".into(),
+        ))
+    }
+}
+
+impl TryFrom<&Value> for Command {
+    type Error = YamlParserError;
+
+    fn try_from(value: &Value) -> Result<Self, Self::Error> {
+        let command_str = value.as_str().ok_or_else(|| {
+            YamlParserError::BadFormat(
+                "Each init command must be a single string. Check your format".into(),
+            )
+        })?;
+
+        Ok(Command::new(command_str, vec![]))
+    }
 }
 
 #[cfg(test)]
@@ -305,4 +324,5 @@ rust:
 
         assert_eq!(&parsed_content, &expected);
     }
+
 }
