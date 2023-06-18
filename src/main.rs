@@ -13,7 +13,7 @@ fn main() {
     let parsed_content =
         yaml_parser::populate_yml(&content, &metadata).expect("Problem with parsing");
 
-    match parse_values_yml(&parsed_content) {
+    match parse_values_yml(&parsed_content, &metadata.language) {
         Ok(value) => println!("Parsed value: {:?}", value),
         Err(e) => println!("Error: {:?}", e),
     };
