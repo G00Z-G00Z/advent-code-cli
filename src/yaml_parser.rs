@@ -325,4 +325,69 @@ rust:
         assert_eq!(&parsed_content, &expected);
     }
 
+    #[test]
+    fn test_error_when_bad_formating() {
+        let file_content = "";
+        let err = parse_values_yml(&file_content, "rust").unwrap_err();
+        assert!(
+            matches!(err, YamlParserError::NoLanguagesProvided),
+            "Expected error when file is empty. Got {:?}",
+            err,
+        );
+
+        let file_content = "
+cosa:
+  commands:
+    - cargo new {{title}}-{{year}}-{{day}}-{{language}}
+       
+  files:
+    - name: .env
+      content: |
+         DEMO_APP=1
+    - src/lib.rs
+    - input.txt
+    - demo-input.txt
+    - notes-day-{{day}}.txt
+
+  folders: 
+    - docs/
+";
+        let err = parse_values_yml(&file_content, "rust").unwrap_err();
+
+        assert!(
+            matches!(
+                parse_values_yml(&file_content, "rust").unwrap_err(),
+                YamlParserError::NoLanguageFound(_)
+            ),
+            "Expected not to find language. Got {:?}",
+            err,
+        );
+
+        let file_content = "
+rust:
+  commands:
+    - cargo new {{title}}-{{year}}-{{day}}-{{language}}
+       
+  files:
+    - mi: .env
+      content: |
+         DEMO_APP=1
+    - src/lib.rs
+    - input.txt
+    - demo-input.txt
+    - notes-day-{{day}}.txt
+
+  folders: 
+    - docs/
+";
+
+        assert!(
+            matches!(
+                parse_values_yml(&file_content, "rust").unwrap_err(),
+                YamlParserError::BadFormat(_)
+            ),
+            "Expected error with files . Got {:?}",
+            err,
+        );
+    }
 }
