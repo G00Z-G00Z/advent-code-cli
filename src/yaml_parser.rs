@@ -160,7 +160,7 @@ impl TryFrom<&Value> for File {
                     )
                 })?;
 
-                return Ok(File::new(name, Some(content_str.into())));
+                return Ok(File::new(name, content_str));
             } else {
                 return Ok(File::empty(name));
             }
@@ -223,7 +223,7 @@ rust:
             init_commands: vec![Command::new("cargo new hello", vec![])],
             commands: vec![Command::new("cargo add serde", vec![])],
             files: vec![
-                File::new(".env", Some("DEMO_APP=1\n".to_string())),
+                File::new(".env", "DEMO_APP=1\n"),
                 File::empty("src/lib.rs"),
                 File::empty("input.txt"),
                 File::empty("demo-input.txt"),

@@ -37,10 +37,10 @@ pub struct File {
 }
 
 impl File {
-    pub fn new(name: &str, content: Option<String>) -> Self {
+    pub fn new(name: &str, content: &str) -> Self {
         Self {
             name: name.to_string(),
-            content,
+            content: Some(content.to_string()),
         }
     }
 
