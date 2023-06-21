@@ -1,20 +1,23 @@
 use advent_code_cli::{
+    cli::Cli,
     interfaces::DayChallenge,
     yaml_parser::{self, parse_values_yml},
 };
+use clap::Parser;
 
 const TEMPLATE_NAME: &str = "template.yml";
 
 fn main() {
-    let content =
-        std::fs::read_to_string(TEMPLATE_NAME).expect("Something went wrong reading the file");
-    let metadata = DayChallenge::new(1, 2020, "Rust".to_string(), "martin".to_string());
+    let mut cli = Cli::parse();
+    cli.init();
 
-    let parsed_content =
-        yaml_parser::populate_yml(&content, &metadata).expect("Problem with parsing");
+    let template_file = cli
+        .template_file
+        .unwrap_or_else(|| std::path::PathBuf::from("./template.yml"));
 
-    match parse_values_yml(&parsed_content, &metadata.language) {
-        Ok(value) => println!("Parsed value: {:?}", value),
-        Err(e) => println!("Error: {:?}", e),
-    };
+    let base_directory = cli
+        .base_directory
+        .unwrap_or_else(|| std::path::PathBuf::from("./"));
+
+    println!("{:?}", base_directory);
 }
