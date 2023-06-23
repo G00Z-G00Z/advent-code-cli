@@ -4,8 +4,9 @@ use std::path::{Path, PathBuf};
 #[derive(Parser)]
 #[command(
     version = "0.1.0",
-    author = "G00Z-G00Z",
-    about = "A CLI for generating files for the advent of code challenge"
+    author,
+    about, 
+    long_about = None
 )]
 pub struct Cli {
     /// The base directory to use. Will default to the current directory.
