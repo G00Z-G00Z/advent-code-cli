@@ -1,8 +1,8 @@
-use std::fs;
+use std::{fs, path::PathBuf};
 
 use advent_code_cli::{
     cli::{Cli, CliError, Commands},
-    utils::list_folder_names,
+    utils::{list_folder_names, prompt_to_remove_directory},
 };
 use clap::Parser;
 
@@ -62,16 +62,50 @@ fn main() {
             println!("Listing all the days in the year: {}", year);
             list_folder_names(&year_path);
         }
+        Commands::Remove {
+            day,
+            year,
+            language,
+            force,
+        } => {
+            let force = force.unwrap_or(false);
+
+            let dir: PathBuf;
+            match (year, day, language) {
+                (None, None, None) => {
+                    eprintln!("You need to specify: year, day, language");
+                    return;
+                }
+                (Some(year), None, None) => {
+                    dir = base_directory.join(year.to_string());
+                }
+                (Some(year), Some(day), None) => {
+                    dir = base_directory.join(year.to_string()).join(day.to_string());
+                }
+                (Some(year), Some(day), Some(language)) => {
+                    dir = base_directory
+                        .join(year.to_string())
+                        .join(day.to_string())
+                        .join(language);
+                }
+                (Some(_), None, Some(_)) => unreachable!(),
+                (None, _, _) => unreachable!(),
+            };
+
+            if !dir.exists() {
+                eprintln!("The directory does not exist");
+                return;
+            }
+
+            prompt_to_remove_directory(&dir, force);
+        }
         Commands::Add {
             day,
             year,
             language,
             title,
-        } => todo!(),
-        Commands::Remove {
-            day,
-            year,
-            language,
-        } => todo!(),
+        } => {
+            todo!()
+        }
     }
 }
