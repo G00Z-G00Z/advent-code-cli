@@ -22,20 +22,6 @@ pub struct Cli {
     pub command: Commands,
 }
 
-impl Cli {
-    pub fn init(&mut self) {
-        let base_directory = std::env::current_dir().unwrap();
-        // Set the default base directory to the current directory
-        if self.base_directory.is_none() {
-            self.base_directory = Some(base_directory.clone());
-        }
-
-        // Set the default template file to the current directory
-        if self.template_file.is_none() {
-            self.template_file = Some(base_directory.join("template.yml"));
-        }
-    }
-}
 
 #[derive(Subcommand)]
 pub enum Commands {
@@ -75,3 +61,22 @@ pub enum Commands {
         year: Option<u16>,
     },
 }
+impl Cli {
+
+
+    pub fn init(&mut self) {
+        let base_directory = std::env::current_dir().unwrap();
+        // Set the default base directory to the current directory
+        if self.base_directory.is_none() {
+            self.base_directory = Some(base_directory.clone());
+        }
+
+        // Set the default template file to the current directory
+        if self.template_file.is_none() {
+            self.template_file = Some(base_directory.join("template.yml"));
+        }
+    }
+
+}
+
+
