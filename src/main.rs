@@ -1,10 +1,9 @@
-use std::{fs, path::PathBuf};
-
 use advent_code_cli::{
-    cli::{Cli, CliError, Commands},
+    cli::{Cli, Commands},
     utils::{list_folder_names, prompt_to_remove_directory},
 };
 use clap::Parser;
+use std::{fs, path::PathBuf};
 
 const TEMPLATE_NAME: &str = "template.yml";
 
@@ -20,7 +19,7 @@ fn main() {
 
     let template_file = cli
         .template_file
-        .unwrap_or_else(|| std::path::PathBuf::from("./template.yml"));
+        .unwrap_or_else(|| std::path::PathBuf::from(format!("./{}", TEMPLATE_NAME)));
 
     // Check if the template file exists
     if !template_file.exists() {
