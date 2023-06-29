@@ -9,6 +9,7 @@ about = "A CLI for generating files for the advent of code challenge"
 
 [dependencies]
 clap = { version = "4.3.5", features = ["derive"] }
+dialoguer = "0.10.4"
 serde = "1.0.164"
 serde_yaml = "0.9.21"
 tempdir = "0.3.7"
