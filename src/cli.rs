@@ -1,6 +1,11 @@
 use clap::{Parser, Subcommand};
 use std::path::PathBuf;
 
+pub enum CliError {
+    BaseDirectoryError(String), 
+    TemplateFileError(String),
+}
+
 #[derive(Parser)]
 #[command(
     version = "0.1.0",
@@ -67,19 +72,36 @@ pub enum Commands {
 impl Cli {
 
 
-    pub fn init(&mut self) {
+    pub fn init(&mut self) -> Result<(), CliError> {
         let base_directory = std::env::current_dir().unwrap();
         // Set the default base directory to the current directory
         if self.base_directory.is_none() {
             self.base_directory = Some(base_directory.clone());
         }
 
+        // Check if the base directory exists
+        if !self.base_directory.as_ref().unwrap().exists() {
+            return Err(CliError::BaseDirectoryError(format!(
+                "Base directory does not exist. Please select a new base directory: {:?}",
+                self.base_directory
+            )));
+        }
+
+
         // Set the default template file to the current directory
         if self.template_file.is_none() {
             self.template_file = Some(base_directory.join("template.yml"));
         }
+
+        // Check if the template file exists
+        if !self.template_file.as_ref().unwrap().exists() {
+            return Err(CliError::TemplateFileError(format!(
+                "Template file does not exist. Create a new one to continue: {:?}",
+                self.template_file
+            )));
+        }
+
+        Ok(())
     }
 
 }
-
-
