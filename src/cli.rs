@@ -1,10 +1,20 @@
 use clap::{Parser, Subcommand};
-use std::path::PathBuf;
+use std::{path::PathBuf, fmt::{Display, self, Formatter}};
 
 pub enum CliError {
     BaseDirectoryError(String), 
     TemplateFileError(String),
 }
+
+impl Display for CliError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        match self {
+            CliError::BaseDirectoryError(e) => write!(f, "Base directory error: {}", e),
+            CliError::TemplateFileError(e) => write!(f, "Template file error: {}", e),
+        }
+    }
+}
+
 
 #[derive(Parser)]
 #[command(
