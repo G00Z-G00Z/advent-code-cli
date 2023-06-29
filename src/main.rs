@@ -1,7 +1,7 @@
 use std::fs;
 
 use advent_code_cli::{
-    cli::{Cli, Commands},
+    cli::{Cli, CliError, Commands},
     utils::list_folder_names,
 };
 use clap::Parser;
@@ -10,7 +10,13 @@ const TEMPLATE_NAME: &str = "template.yml";
 
 fn main() {
     let mut cli = Cli::parse();
-    cli.init();
+    match cli.init() {
+        Ok(_) => {}
+        Err(e) => {
+            eprintln!("Error! {}", e);
+            return;
+        }
+    }
 
     let template_file = cli
         .template_file
