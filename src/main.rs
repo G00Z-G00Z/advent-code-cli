@@ -1,6 +1,9 @@
 use std::fs;
 
-use advent_code_cli::cli::{Cli, Commands};
+use advent_code_cli::{
+    cli::{Cli, Commands},
+    utils::list_folder_names,
+};
 use clap::Parser;
 
 const TEMPLATE_NAME: &str = "template.yml";
@@ -37,22 +40,7 @@ fn main() {
             if year.is_none() {
                 // List all the years in the base directory
                 println!("Listing all the years in the base directory: ");
-                for entry in std::fs::read_dir(&base_directory).unwrap() {
-                    let entry = entry.unwrap();
-                    let path = entry.path();
-                    if path.is_dir() {
-                        println!(
-                            "- {}",
-                            path.components()
-                                .last()
-                                .unwrap()
-                                .as_os_str()
-                                .to_str()
-                                .unwrap()
-                        );
-                    }
-                }
-                return;
+                list_folder_names(&base_directory);
             }
 
             let year = year.unwrap();
@@ -66,22 +54,7 @@ fn main() {
 
             // List all the days in the year
             println!("Listing all the days in the year: {}", year);
-
-            for entry in std::fs::read_dir(&year_path).unwrap() {
-                let entry = entry.unwrap();
-                let path = entry.path();
-                if path.is_dir() {
-                    println!(
-                        "- {}",
-                        path.components()
-                            .last()
-                            .unwrap()
-                            .as_os_str()
-                            .to_str()
-                            .unwrap()
-                    );
-                }
-            }
+            list_folder_names(&year_path);
         }
         Commands::Add {
             day,
