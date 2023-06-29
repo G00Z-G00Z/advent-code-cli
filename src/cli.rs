@@ -58,17 +58,19 @@ pub enum Commands {
         title: String,
     },
     Remove {
-        /// The day to remove
-        #[arg(short, long)]
-        day: Option<u8>,
 
         /// The year to remove
-        #[arg(short, long)]
+        #[arg()]
         year: Option<u16>,
 
+        /// The day to remove
+        #[arg()]
+        day: Option<u8>,
+
         /// The language to remove
-        #[arg(short, long)]
+        #[arg()]
         language: Option<String>,
+
     },
     /// Lists the challenges on a particular year
     List {
