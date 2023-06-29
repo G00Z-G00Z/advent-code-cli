@@ -55,12 +55,15 @@ pub enum Commands {
         #[arg(short, long)]
         language: Option<String>,
     },
+    /// Lists the challenges on a particular year
     List {
-        /// The year to list
-        #[arg(short, long)]
+        /// The year to list. If none is provided, it will list all the years
+        #[arg()]
         year: Option<u16>,
     },
 }
+
+
 impl Cli {
 
 
