@@ -71,6 +71,9 @@ pub enum Commands {
         #[arg()]
         language: Option<String>,
 
+        /// Force it without prompting
+        #[arg(short)]
+        force: Option<bool>,
     },
     /// Lists the challenges on a particular year
     List {
