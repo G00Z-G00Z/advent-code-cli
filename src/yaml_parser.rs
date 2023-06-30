@@ -13,7 +13,7 @@ pub enum YamlParserError {
     BadFormat(String),
 }
 
-/// Parses the yml file with the given metadata
+/// Populates the yml file with the given metadata
 pub fn populate_yml(
     yml_file_content: &str,
     day_challenge: &DayChallenge,
@@ -42,6 +42,7 @@ pub fn populate_yml(
     Ok(rendered)
 }
 
+/// Parses the values of the yml file into a yamlparser error
 pub fn parse_values_yml(
     yaml_content: &str,
     language: &str,
