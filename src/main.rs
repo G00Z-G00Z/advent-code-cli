@@ -1,5 +1,6 @@
 use advent_code_cli::{
     cli::{Cli, Commands},
+    file_handler::{AventStructure, BuildError},
     interfaces::DayChallenge,
     utils::{list_folder_names, prompt_to_remove_directory},
     yaml_parser::{parse_values_yml, populate_yml, YamlParserError},
@@ -149,7 +150,26 @@ fn main() {
             }
 
             let programming_template = programming_template.unwrap();
-            println!("Programming template: {:?}", programming_template);
+
+            let mut structure = AventStructure::new(&base_directory);
+
+            match structure.add_day(&day_challenge, &programming_template) {
+                Ok(p) => {
+                    println!("Successfully created the directory structure");
+                    println!("Path: {}", p.as_os_str().to_str().unwrap());
+                }
+                Err(e) => match e {
+                    BuildError::FileError => {
+                        panic!("FileError: Problems building the files ");
+                    }
+                    BuildError::TemplateError(m) => {
+                        panic!("TemplateError: {}", m);
+                    }
+                    BuildError::DirectoryError => {
+                        panic!("DirectoryError: Problems building the directories");
+                    }
+                },
+            }
         }
     }
 }
