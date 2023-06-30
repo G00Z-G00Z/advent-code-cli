@@ -34,8 +34,8 @@ impl AventStructure {
             .base_directory
             .join("src")
             .join(challenge.year.to_string())
-            .join(format!("Day-{:02}-{}", challenge.day, challenge.title))
-            .join(challenge.language.to_string());
+            .join(challenge.language.to_string())
+            .join(format!("Day-{:02}-{}", challenge.day, challenge.title));
         fs::create_dir_all(&year_path).map_err(|_| BuildError::DirectoryError)?;
 
         // Run the init commands
