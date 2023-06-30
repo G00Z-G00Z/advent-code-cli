@@ -1,6 +1,8 @@
 use advent_code_cli::{
     cli::{Cli, Commands},
+    interfaces::DayChallenge,
     utils::{list_folder_names, prompt_to_remove_directory},
+    yaml_parser::{parse_values_yml, populate_yml, YamlParserError},
 };
 use clap::Parser;
 use std::{fs, path::PathBuf};
@@ -46,6 +48,7 @@ fn main() {
                 // List all the years in the base directory
                 println!("Listing all the years in the base directory: ");
                 list_folder_names(&base_directory);
+                return ();
             }
 
             let year = year.unwrap();
@@ -104,7 +107,49 @@ fn main() {
             language,
             title,
         } => {
-            todo!()
+            let day_challenge = DayChallenge {
+                day,
+                year,
+                language,
+                title,
+            };
+
+            let template_content =
+                fs::read_to_string(&template_file).expect("Unable to read template file");
+
+            let populated_template = match populate_yml(&template_content, &day_challenge) {
+                Ok(template) => template,
+                Err(e) => match e {
+                    YamlParserError::TeraError(e) => {
+                        panic!("Error! {}", e);
+                    }
+                    _ => unreachable!(),
+                },
+            };
+
+            let programming_template =
+                parse_values_yml(&populated_template, &day_challenge.language);
+
+            if let Err(e) = programming_template {
+                match e {
+                    YamlParserError::NoLanguagesProvided => {
+                        panic!("No languages provided in the template file");
+                    }
+                    YamlParserError::NoLanguageFound(l) => {
+                        panic!("No language found for {} in template file", l);
+                    }
+                    YamlParserError::YamlError(e) => {
+                        panic!("YamlError! {}", e);
+                    }
+                    YamlParserError::BadFormat(m) => {
+                        panic!("Bad format! {}", m);
+                    }
+                    YamlParserError::TeraError(_) => unreachable!(),
+                }
+            }
+
+            let programming_template = programming_template.unwrap();
+            println!("Programming template: {:?}", programming_template);
         }
     }
 }
