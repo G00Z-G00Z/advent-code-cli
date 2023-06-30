@@ -1,6 +1,6 @@
 rust:
   init_commands:
-    - cargo new {{title}}
+    - cargo init --vcs none --lib -q
 
   files:
     - name: .env
