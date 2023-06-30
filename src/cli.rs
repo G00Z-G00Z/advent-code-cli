@@ -42,19 +42,19 @@ pub struct Cli {
 pub enum Commands {
     Add {
         /// The day to add
-        #[arg(short, long)]
+        #[arg()]
         day: u8,
 
         /// The year to add
-        #[arg(short, long)]
+        #[arg()]
         year: u16,
 
         /// The language to add
-        #[arg(short, long)]
+        #[arg()]
         language: String,
 
         /// Title of the challenge
-        #[arg(short, long)]
+        #[arg()]
         title: String,
     },
     Remove {
