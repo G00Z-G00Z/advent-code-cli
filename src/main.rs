@@ -40,8 +40,7 @@ fn main() {
         return;
     }
 
-    let base_directory = base_directory.join("src");
-    fs::create_dir_all(&base_directory).unwrap();
+    let base_directory = base_directory;
 
     match cli.command {
         Commands::List { year } => {
