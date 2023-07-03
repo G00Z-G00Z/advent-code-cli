@@ -1,6 +1,6 @@
 [package]
 name = "advent-code-cli"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 author = "g00z_g00z"
 about = "A CLI for generating files for the advent of code challenge"
