@@ -80,6 +80,11 @@ pub enum Commands {
         /// The year to list. If none is provided, it will list all the years
         #[arg()]
         year: Option<u16>,
+
+        /// Lang to list
+        #[arg()]
+        lang: Option<String>,
+
     },
 }
 

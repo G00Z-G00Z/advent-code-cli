@@ -43,7 +43,7 @@ fn main() {
     let mut structure = AventStructure::new(base_directory);
 
     match cli.command {
-        Commands::List { year } => {
+        Commands::List { year, lang } => {
             if year.is_none() {
                 // List all the years in the base directory
                 println!("Listing all the years in the base directory: ");
@@ -60,9 +60,61 @@ fn main() {
                 return;
             }
 
-            // List all the days in the year
-            println!("Listing all the days in the year: {}", year);
-            list_folder_names(&year_path);
+            // Check if only one language
+
+            let langs = std::fs::read_dir(&year_path)
+                .expect("Expected to be able to read year")
+                .filter_map(|e| {
+                    let path = e.unwrap().path();
+                    if path.is_dir() {
+                        Some(path.file_name().unwrap().to_str().unwrap().to_string())
+                    } else {
+                        None
+                    }
+                })
+                .collect::<Vec<String>>();
+
+            if langs.is_empty() {
+                println!("You do not have entries for the year {}...", year);
+                return;
+            }
+
+            if langs.iter().count() == 1 {
+                println!(
+                    "Listing all the days from the year {} in the language {}",
+                    year, langs[0]
+                );
+                let path = year_path.join(&langs[0]);
+                list_folder_names(&path);
+            }
+
+            if lang.is_none() {
+                // List all the languages in the year
+                println!("Listing all the languages in the year {}", year);
+                list_folder_names(&year_path);
+                return;
+            }
+
+            let lang = lang.unwrap();
+
+            let lang_path = year_path.join(&lang);
+
+            if !lang_path.exists() {
+                println!(
+                    "You do not have entries for the year {} in the language {}...",
+                    year, lang
+                );
+                return;
+            }
+
+            // List all the days in the language
+
+            println!(
+                "Listing all the days from the year {} in the language {}",
+                year, lang
+            );
+
+            list_folder_names(&lang_path);
         }
         Commands::Remove {
             day,
