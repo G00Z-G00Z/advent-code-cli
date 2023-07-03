@@ -40,20 +40,20 @@ fn main() {
         return;
     }
 
-    let base_directory = base_directory;
+    let mut structure = AventStructure::new(base_directory);
 
     match cli.command {
         Commands::List { year } => {
             if year.is_none() {
                 // List all the years in the base directory
                 println!("Listing all the years in the base directory: ");
-                list_folder_names(&base_directory);
+                list_folder_names(&structure.base_directory);
                 return ();
             }
 
             let year = year.unwrap();
 
-            let year_path = base_directory.join(year.to_string());
+            let year_path = structure.base_directory.join(year.to_string());
 
             if !year_path.exists() {
                 println!("You do not have entries for the year {}...", year);
@@ -79,13 +79,17 @@ fn main() {
                     return;
                 }
                 (Some(year), None, None) => {
-                    dir = base_directory.join(year.to_string());
+                    dir = structure.base_directory.join(year.to_string());
                 }
                 (Some(year), Some(day), None) => {
-                    dir = base_directory.join(year.to_string()).join(day.to_string());
+                    dir = structure
+                        .base_directory
+                        .join(year.to_string())
+                        .join(day.to_string());
                 }
                 (Some(year), Some(day), Some(language)) => {
-                    dir = base_directory
+                    dir = structure
+                        .base_directory
                         .join(year.to_string())
                         .join(day.to_string())
                         .join(language);
@@ -149,8 +153,6 @@ fn main() {
             }
 
             let programming_template = programming_template.unwrap();
-
-            let mut structure = AventStructure::new(&base_directory);
 
             match structure.add_day(&day_challenge, &programming_template) {
                 Ok(p) => {

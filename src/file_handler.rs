@@ -1,7 +1,4 @@
-use std::{
-    fs,
-    path::{Path, PathBuf},
-};
+use std::{fs, path::PathBuf};
 
 use crate::interfaces::{DayChallenge, ProgrammingTemplate};
 
@@ -14,13 +11,13 @@ pub enum BuildError {
 
 /// Hanldes the creation of the directory structure for the advent of code
 pub struct AventStructure {
-    base_directory: PathBuf,
+    pub base_directory: PathBuf,
 }
 
 impl AventStructure {
-    pub fn new(base_directory: &Path) -> AventStructure {
+    pub fn new(base_directory: PathBuf) -> AventStructure {
         AventStructure {
-            base_directory: PathBuf::from(base_directory),
+            base_directory: base_directory.join("src"),
         }
     }
 
@@ -32,7 +29,6 @@ impl AventStructure {
     ) -> Result<PathBuf, BuildError> {
         let year_path = self
             .base_directory
-            .join("src")
             .join(challenge.year.to_string())
             .join(challenge.language.to_string())
             .join(format!("Day-{:02}-{}", challenge.day, challenge.title));
@@ -130,20 +126,24 @@ mod tests {
 
     #[test]
     fn test_initialize_year_folder_correctly() {
-        let base_dir = get_tmp_dir();
+        let base_dir = get_tmp_dir().as_ref().join("src");
         let challenge = get_challenge();
         let template = get_template();
         const YEAR: u32 = 2015;
-        let mut structure = AventStructure::new(base_dir.as_ref());
+        let base_dir_c = base_dir.clone();
+        let mut structure = AventStructure::new(base_dir);
+        let base_dir = base_dir_c;
 
         let new_dir = structure.add_day(&challenge, &template).unwrap();
+        println!("{:?}", new_dir);
 
         let challenge_path = base_dir
-            .path()
             .join("src")
             .join(YEAR.to_string())
-            .join(format!("Day-{:02}-{}", challenge.day, challenge.title))
-            .join(challenge.language.to_string());
+            .join(challenge.language.to_string())
+            .join(format!("Day-{:02}-{}", challenge.day, challenge.title));
+
+        println!("{:?}", challenge_path);
 
         assert!(
             challenge_path.exists(),
